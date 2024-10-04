@@ -1,0 +1,26 @@
+---
+# Test connectivity and analyze target RHEL and AIX IBM Liberty application server
+# Run as 'wasadm' user, not root or personal user
+# Provide output indicating if Ansible Tower can connect or give verbose output if it cannot connect to the target server
+# Target host(s) are being selected by Ansible Tower survey
+
+- name: Test connectivity to target servers
+  hosts: "{{ target_hosts }}"
+  gather_facts: false
+  remote_user: wasadm
+  tasks:
+
+    - name: Ping host
+      ping:
+      register: ping_result
+      ignore_errors: yes
+
+    - name: Display ping success message
+      debug:
+        msg: "Ping to {{ inventory_hostname }} successful."
+      when: ping_result.ping is defined
+
+    - name: Display ping failure message
+      debug:
+        msg: "Ping to {{ inventory_hostname }} failed: {{ ping_result.msg }}"
+      when: ping_result.ping is not defined
