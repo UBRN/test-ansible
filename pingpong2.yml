@@ -19,7 +19,7 @@
       debug:
         msg: "Ping to {{ inventory_hostname }} successful."
       when: ping_result.ping is defined
-
+      
     - name: Display ping failure message
       debug:
         msg: "Ping to {{ inventory_hostname }} failed: {{ ping_result.msg }}"
