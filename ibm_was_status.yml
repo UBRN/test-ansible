@@ -1,0 +1,40 @@
+---
+# Check IBM Liberty and WAS ND server status on target RHEL and AIX servers
+# Run as 'wasadm' user, not root or personal user
+# Target host(s) are being selected by Ansible Tower survey
+
+- name: Check IBM Liberty and WAS ND server status
+  hosts: "{{ target_hosts }}"
+  gather_facts: false
+  remote_user: wasadm
+  tasks:
+
+    - name: Check IBM Liberty server status
+      shell: "systemctl status ibm-liberty"
+      register: liberty_status
+      ignore_errors: yes
+
+    - name: Display IBM Liberty server status
+      debug:
+        msg: "IBM Liberty server status on {{ inventory_hostname }}: {{ liberty_status.stdout }}"
+      when: liberty_status.rc == 0
+
+    - name: Check WAS ND server status
+      shell: "systemctl status was-nd"
+      register: was_nd_status
+      ignore_errors: yes
+
+    - name: Display WAS ND server status
+      debug:
+        msg: "WAS ND server status on {{ inventory_hostname }}: {{ was_nd_status.stdout }}"
+      when: was_nd_status.rc == 0
+
+    - name: Display error if IBM Liberty server status check failed
+      debug:
+        msg: "Failed to check IBM Liberty server status on {{ inventory_hostname }}: {{ liberty_status.stderr }}"
+      when: liberty_status.rc != 0
+
+    - name: Display error if WAS ND server status check failed
+      debug:
+        msg: "Failed to check WAS ND server status on {{ inventory_hostname }}: {{ was_nd_status.stderr }}"
+      when: was_nd_status.rc != 0

@@ -1,0 +1,27 @@
+---
+# ...existing pre-task code...
+
+- name: Ensure required packages are installed
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - git
+    - curl
+    - vim
+  when: ansible_os_family == "Debian"
+
+# Optimized block for multiple tasks to reduce overhead.
+- block:
+    - name: Configure sample application file
+      template:
+        src: sample.conf.j2
+        dest: /etc/sample.conf
+    - name: Restart sample service
+      service:
+        name: sample
+        state: restarted
+  when: ansible_os_family == "Debian"
+
+# ...existing post-task code...
